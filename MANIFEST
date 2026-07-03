@@ -11,3 +11,4 @@ t/midnight_fail.t
 t/noon_fail.t
 t/pod-coverage.t
 t/pod.t
+t/suricata_to_circle.t

@@ -11,6 +11,9 @@ Convert time to a number.
 
 - midnight_fail :: Wraps at 12:00 but will produce a gap at 00:00.
 
+- suricata_to_circle :: Takes the .timestamp value like in Suricata EVE files, removes the
+  date and timezone part, and then feeds it to circle before returning the result.
+
 The one you likely want is circle.
 
 So when using it with isolation forest you will have each returned angle be it's own
@@ -83,6 +86,23 @@ two helps avoid the clustering issue.
         $time = $hour . ':30';
         ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->circle($time);
         print $time . ' ' . $sin_angle . "\n";
+
+        $hour++;
+    }
+
+    print "---------------------------------------------------\n";
+    print "--------------suricata_to_circle-------------------\n";
+    print "---------------------------------------------------\n";
+
+    $hour = 0;
+    while ($hour < 24) {
+        my $time = '2026-07-03T' .$hour . ':00:31.121465-0500';
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+
+        $time = '2026-07-03T' .$hour . ':00:31.121465-0500';
+        ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
 
         $hour++;
     }

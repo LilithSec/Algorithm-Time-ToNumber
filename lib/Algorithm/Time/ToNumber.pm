@@ -87,6 +87,22 @@ our $VERSION = '0.0.1';
         $hour++;
     }
 
+    print "---------------------------------------------------\n";
+    print "--------------suricata_to_circle-------------------\n";
+    print "---------------------------------------------------\n";
+
+    $hour = 0;
+    while ($hour < 24) {
+        my $time = '2026-07-03T' .$hour . ':00:31.121465-0500';
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+
+        $time = '2026-07-03T' .$hour . ':00:31.121465-0500';
+        ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+
+        $hour++;
+    }
 
 =head1 SUBROUTINES
 
@@ -172,7 +188,7 @@ forest one needs to save both returns as their own feature.
 
 sub circle {
 	my ($class, $time) = @_;
-	
+
     my ($h, $m, $s) = split( /:/, $time);
     $s //= 0;
 
@@ -212,6 +228,36 @@ sub angle {
     my $angle = 2 * pi * ($h * 3600 + $m * 60 + $s) / 86400;
 
     return sin($angle);
+}
+
+=head2 suricata_to_circle
+
+Convert .timestamp from Suricata EVE output to something that
+circle can parse and return it.
+
+    my $hour = 0;
+
+    while ($hour < 24) {
+        my $time = '2026-07-03T' .$hour . ':00:31.121465-0500';
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+
+        $time = '2026-07-03T' .$hour . ':00:31.121465-0500';
+        ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+
+        $hour++;
+    }
+
+=cut
+
+sub suricata_to_circle {
+	my ($class, $time) = @_;
+
+	$time =~ s/^.*T//;
+	$time =~ s/\-.*$//;
+
+	return Algorithm::Time::ToNumber->circle($time);
 }
 
 =head1 AUTHOR
