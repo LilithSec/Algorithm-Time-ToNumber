@@ -4,6 +4,7 @@ use 5.006;
 use strict;
 use warnings;
 use Math::Trig qw(pi);
+use Time::Piece;
 
 =head1 NAME
 
@@ -101,6 +102,76 @@ our $VERSION = '0.0.1';
         ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle($time);
         print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
 
+        $hour++;
+    }
+
+    print "---------------------------------------------------\n";
+    print "----------------circle_day-------------------------\n";
+    print "---------------------------------------------------\n";
+
+    my $day = 0;
+    while ($day < 7) {
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->circle_day($day);
+        print $day . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+        $day++;
+    }
+
+    print "---------------------------------------------------\n";
+    print "-----------------angle_day-------------------------\n";
+    print "---------------------------------------------------\n";
+
+    $day = 0;
+    while ($day < 7) {
+        my $sin_angle = Algorithm::Time::ToNumber->angle_day($day);
+        print $day . ' ' . $sin_angle . "\n";
+        $day++;
+    }
+
+    print "---------------------------------------------------\n";
+    print "----------suricata_to_circle_day-------------------\n";
+    print "---------------------------------------------------\n";
+
+    $hour = 0;
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle_day($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+        $hour++;
+    }
+
+    print "---------------------------------------------------\n";
+    print "----------suricata_to_angle_day--------------------\n";
+    print "---------------------------------------------------\n";
+
+    $hour = 0;
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my $sin_angle = Algorithm::Time::ToNumber->suricata_to_angle_day($time);
+        print $time . ' ' . $sin_angle . "\n";
+        $hour++;
+    }
+
+    print "---------------------------------------------------\n";
+    print "--------suricata_to_circle_both--------------------\n";
+    print "---------------------------------------------------\n";
+
+    $hour = 0;
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle_both($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+        $hour++;
+    }
+
+    print "---------------------------------------------------\n";
+    print "---------suricata_to_angle_both--------------------\n";
+    print "---------------------------------------------------\n";
+
+    $hour = 0;
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my $sin_angle = Algorithm::Time::ToNumber->suricata_to_angle_both($time);
+        print $time . ' ' . $sin_angle . "\n";
         $hour++;
     }
 
@@ -258,6 +329,168 @@ sub suricata_to_circle {
 	$time =~ s/\-.*$//;
 
 	return Algorithm::Time::ToNumber->circle($time);
+}
+
+=head2 circle_day
+
+Convert day of week to sin/cos values on a circle, suitable for use with
+isolation forest. The day value should be 0 (Sunday) through 6 (Saturday),
+matching the convention used by Perl's C<localtime>.
+
+    my $day = 0;
+
+    while ($day < 7) {
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->circle_day($day);
+        print $day . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+        $day++;
+    }
+
+=cut
+
+sub circle_day {
+	my ($class, $day) = @_;
+
+	my $angle = 2 * pi * $day / 7;
+
+	return (sin($angle), cos($angle));
+}
+
+=head2 angle_day
+
+Like circle_day, but returns only the sin value.
+
+    my $day = 0;
+
+    while ($day < 7) {
+        my $sin_angle = Algorithm::Time::ToNumber->angle_day($day);
+        print $day . ' ' . $sin_angle . "\n";
+        $day++;
+    }
+
+=cut
+
+sub angle_day {
+	my ($class, $day) = @_;
+
+	my $angle = 2 * pi * $day / 7;
+
+	return sin($angle);
+}
+
+=head2 suricata_to_circle_day
+
+Convert .timestamp from Suricata EVE output to a circle_day value based on
+the day of week.
+
+    my $hour = 0;
+
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle_day($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+        $hour++;
+    }
+
+=cut
+
+sub suricata_to_circle_day {
+	my ($class, $time) = @_;
+
+	my ($date) = $time =~ /^(\d{4}-\d{2}-\d{2})T/;
+
+	my $t = Time::Piece->strptime($date, '%Y-%m-%d');
+
+	return Algorithm::Time::ToNumber->circle_day($t->day_of_week);
+}
+
+=head2 suricata_to_angle_day
+
+Convert .timestamp from Suricata EVE output to an angle_day value based on
+the day of week.
+
+    my $hour = 0;
+
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my $sin_angle = Algorithm::Time::ToNumber->suricata_to_angle_day($time);
+        print $time . ' ' . $sin_angle . "\n";
+        $hour++;
+    }
+
+=cut
+
+sub suricata_to_angle_day {
+	my ($class, $time) = @_;
+
+	my ($date) = $time =~ /^(\d{4}-\d{2}-\d{2})T/;
+
+	my $t = Time::Piece->strptime($date, '%Y-%m-%d');
+
+	return Algorithm::Time::ToNumber->angle_day($t->day_of_week);
+}
+
+=head2 suricata_to_circle_both
+
+Convert .timestamp from Suricata EVE output to a sin/cos pair encoding both
+the day of week and time of day as a single position within the week. The
+week is treated as a 604800-second circle (7 days * 86400 seconds).
+
+    my $hour = 0;
+
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my ($sin_angle, $cos_angle) = Algorithm::Time::ToNumber->suricata_to_circle_both($time);
+        print $time . ' ' . $sin_angle . ' ' . $cos_angle . "\n";
+        $hour++;
+    }
+
+=cut
+
+sub suricata_to_circle_both {
+	my ($class, $time) = @_;
+
+	my ($date) = $time =~ /^(\d{4}-\d{2}-\d{2})T/;
+	my $t = Time::Piece->strptime($date, '%Y-%m-%d');
+
+	my ($hms) = $time =~ /T([\d:\.]+)/;
+	my ($h, $m, $s) = split(/:/, $hms);
+	$s //= 0;
+
+	my $week_seconds = $t->day_of_week * 86400 + $h * 3600 + $m * 60 + $s;
+	my $angle = 2 * pi * $week_seconds / 604800;
+
+	return (sin($angle), cos($angle));
+}
+
+=head2 suricata_to_angle_both
+
+Like suricata_to_circle_both, but returns only the sin value.
+
+    my $hour = 0;
+
+    while ($hour < 24) {
+        my $time = '2026-07-03T' . $hour . ':00:31.121465-0500';
+        my $sin_angle = Algorithm::Time::ToNumber->suricata_to_angle_both($time);
+        print $time . ' ' . $sin_angle . "\n";
+        $hour++;
+    }
+
+=cut
+
+sub suricata_to_angle_both {
+	my ($class, $time) = @_;
+
+	my ($date) = $time =~ /^(\d{4}-\d{2}-\d{2})T/;
+	my $t = Time::Piece->strptime($date, '%Y-%m-%d');
+
+	my ($hms) = $time =~ /T([\d:\.]+)/;
+	my ($h, $m, $s) = split(/:/, $hms);
+	$s //= 0;
+
+	my $week_seconds = $t->day_of_week * 86400 + $h * 3600 + $m * 60 + $s;
+	my $angle = 2 * pi * $week_seconds / 604800;
+
+	return sin($angle);
 }
 
 =head1 AUTHOR
