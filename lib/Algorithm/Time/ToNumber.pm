@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Math::Trig qw(pi);
 use Time::Piece;
+use XSLoader;
 
 =head1 NAME
 
@@ -17,6 +18,8 @@ Version 0.0.1
 =cut
 
 our $VERSION = '0.0.1';
+
+XSLoader::load(__PACKAGE__, $VERSION);
 
 =head1 SYNOPSIS
 
@@ -446,21 +449,6 @@ week is treated as a 604800-second circle (7 days * 86400 seconds).
 
 =cut
 
-sub suricata_to_circle_both {
-	my ($class, $time) = @_;
-
-	my ($date) = $time =~ /^(\d{4}-\d{2}-\d{2})T/;
-	my $t = Time::Piece->strptime($date, '%Y-%m-%d');
-
-	my ($hms) = $time =~ /T([\d:\.]+)/;
-	my ($h, $m, $s) = split(/:/, $hms);
-	$s //= 0;
-
-	my $week_seconds = $t->day_of_week * 86400 + $h * 3600 + $m * 60 + $s;
-	my $angle = 2 * pi * $week_seconds / 604800;
-
-	return (sin($angle), cos($angle));
-}
 
 =head2 suricata_to_angle_both
 
@@ -477,21 +465,6 @@ Like suricata_to_circle_both, but returns only the sin value.
 
 =cut
 
-sub suricata_to_angle_both {
-	my ($class, $time) = @_;
-
-	my ($date) = $time =~ /^(\d{4}-\d{2}-\d{2})T/;
-	my $t = Time::Piece->strptime($date, '%Y-%m-%d');
-
-	my ($hms) = $time =~ /T([\d:\.]+)/;
-	my ($h, $m, $s) = split(/:/, $hms);
-	$s //= 0;
-
-	my $week_seconds = $t->day_of_week * 86400 + $h * 3600 + $m * 60 + $s;
-	my $angle = 2 * pi * $week_seconds / 604800;
-
-	return sin($angle);
-}
 
 =head1 AUTHOR
 
