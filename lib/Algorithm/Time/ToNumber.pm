@@ -17,7 +17,6 @@ Version 0.0.1
 
 our $VERSION = '0.0.1';
 
-
 =head1 SYNOPSIS
 
     use Algorithm::Time::ToNumber;
@@ -55,6 +54,8 @@ our $VERSION = '0.0.1';
     print "---------------------------------------------------\n";
     print "---------------------circle------------------------\n";
     print "---------------------------------------------------\n";
+
+    # this is what you want if you plan to use it with isolation forest
 
     $hour=0;
     while ($hour < 24) {
