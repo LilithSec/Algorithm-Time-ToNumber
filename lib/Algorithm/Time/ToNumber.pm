@@ -13,11 +13,11 @@ Algorithm::Time::ToNumber - convert time to a number
 
 =head1 VERSION
 
-Version 0.0.1
+Version 0.1.0
 
 =cut
 
-our $VERSION = '0.0.1';
+our $VERSION = '0.1.0';
 
 XSLoader::load(__PACKAGE__, $VERSION);
 
